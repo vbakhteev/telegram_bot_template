@@ -3,16 +3,48 @@ version: "3.8"
 services:
   habit_bot:
     image: habit_bot
-    container_name: habit_bot
+    container_name: habit_bot_container
     build:
       context: ./bot
     environment:
-      - PROD=$PROD
-      - TOKEN=$TOKEN
-      - DB_URL=sqlite:///data/data.db
+      PROD: $PROD
+      TOKEN: $TOKEN
+      DB_URL: "postgresql://postgresuser:postgrespass@postgres:5432/postgresdb"
     volumes:
       - ./resources/bot:/habit_bot/bot_data
-      - ./resources/db:/habit_bot/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_container
+    environment:
+      POSTGRES_DB: "postgresdb"
+      POSTGRES_USER: "postgresuser"
+      POSTGRES_PASSWORD: "postgrespass"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./resources/db:/var/lib/postgresql/data
+#    ports:
+#      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgresuser -d postgresdb" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: always
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
 
   minio:
     image: minio/minio
