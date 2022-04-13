@@ -28,7 +28,7 @@ def main(token, persistence_filename: str):
 
 if __name__ == '__main__':
     is_prod = os.getenv('PROD', False)
-    logger = get_logger(is_prod)
+    logger = get_logger(is_prod, file_path="bot_data/bot.log")
 
     from src.models import Base
 
@@ -37,5 +37,5 @@ if __name__ == '__main__':
     manager = Manager(engine)
 
     token = os.getenv('TOKEN')
-    persistence_filename = os.getenv('PERSISTENCE', 'persistence/bot_persistence.data')
+    persistence_filename = os.getenv('PERSISTENCE', 'bot_data/bot_persistence.data')
     main(token, persistence_filename)

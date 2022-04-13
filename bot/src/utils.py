@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from telegram.ext import Filters
 
@@ -20,7 +21,7 @@ def todict(obj):
     }
 
 
-def get_logger(is_prod: bool, name='bot'):
+def get_logger(is_prod: bool, file_path: Optional[str] = None, name='bot'):
     logging.basicConfig(
         level=logging.INFO if is_prod else logging.DEBUG,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -30,6 +31,6 @@ def get_logger(is_prod: bool, name='bot'):
     if is_prod:
         for handler in logging.root.handlers:
             handler.addFilter(logging.Filter(name))
-        logger.addHandler(logging.FileHandler("data/bot.log"))
+        logger.addHandler(logging.FileHandler(file_path or 'bot.log'))
 
     return logger

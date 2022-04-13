@@ -11,7 +11,7 @@ services:
       - TOKEN=$TOKEN
       - DB_URL=sqlite:///data/data.db
     volumes:
-      - ./resources/bot:/habit_bot/persistence
+      - ./resources/bot:/habit_bot/bot_data
       - ./resources/db:/habit_bot/data
 
   minio:
