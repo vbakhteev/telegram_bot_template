@@ -27,6 +27,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
+      PROD: $PROD
       DB_URL: "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/postgresdb"
     volumes:
       - ./bot/alembic:/bot/alembic

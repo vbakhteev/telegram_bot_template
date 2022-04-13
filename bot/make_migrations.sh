@@ -1,8 +1,11 @@
 #!/bin/bash
 
-echo "Generating migrations files..."
-alembic upgrade head
-alembic revision --autogenerate
+if [ "$PROD" != "true" ]
+then
+  echo "Generating migrations files..."
+  alembic upgrade head
+  alembic revision --autogenerate
+fi
 
 echo "Applying migrations..."
 alembic upgrade head
