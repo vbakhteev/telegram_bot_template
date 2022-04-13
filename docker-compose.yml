@@ -9,7 +9,7 @@ services:
     environment:
       - PROD=$PROD
       - TOKEN=$TOKEN
-      - DB_URL="sqlite:///data/data.db"
+      - DB_URL=sqlite:///data/data.db
     volumes:
       - ./resources/bot:/habit_bot/persistence
       - ./resources/db:/habit_bot/data
