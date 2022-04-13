@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  habit_bot:
-    image: habit_bot
+  tg_bot:
+    image: tg_bot
     container_name: habit_bot_container
     build:
       context: ./bot
@@ -48,6 +48,7 @@ services:
 
   minio:
     image: minio/minio
+    container_name: minio_container
     volumes:
       - ./resources/media:/data
 #    ports:
