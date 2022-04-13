@@ -41,7 +41,7 @@ def main(token, persistence_filename: str):
 
 
 if __name__ == '__main__':
-    is_prod = os.getenv('PROD', False)
+    is_prod = os.getenv("PROD", "false").lower() == "true"
     logger = get_logger(is_prod, file_path="bot_data/bot.log")
 
     engine = create_engine(os.getenv('DB_URL'))
