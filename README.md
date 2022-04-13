@@ -1,6 +1,6 @@
 # telegram_bot_template
 
-This is a starting point to implement telegram bot.
+This is a starting point for implemention of a telegram bot.
 It consist of 4 services:
 - Bot service: Business logic of application
 - Postgres: Database
@@ -8,7 +8,7 @@ It consist of 4 services:
 - Minio: Storage for files
 
 # Getting started
-Create `.env` file and add the TOKEN from https://t.me/BotFather
+Create `.env` file and add a TOKEN from https://t.me/BotFather
 ```
 TOKEN="Your secret token"
 PROD=false
