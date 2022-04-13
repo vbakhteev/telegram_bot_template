@@ -30,10 +30,7 @@ if __name__ == '__main__':
     is_prod = os.getenv('PROD', False)
     logger = get_logger(is_prod, file_path="bot_data/bot.log")
 
-    from src.models import Base
-
     engine = create_engine(os.getenv('DB_URL'))
-    Base.metadata.create_all(engine)
     manager = Manager(engine)
 
     token = os.getenv('TOKEN')

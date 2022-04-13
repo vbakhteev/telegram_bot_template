@@ -11,4 +11,4 @@ RUN poetry config virtualenvs.create false \
 
 COPY . .
 
-CMD alembic upgrade head && python bot.py
+CMD python bot.py

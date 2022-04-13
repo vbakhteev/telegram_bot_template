@@ -15,6 +15,20 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+
+  migrations:
+    image: tg_bot
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: "postgresql://postgresuser:postgrespass@postgres:5432/postgresdb"
+    volumes:
+      - ./bot/alembic:/bot/alembic
+    restart: "no"
+    entrypoint: [ "./make_migrations.sh" ]
 
   postgres:
     image: postgres:latest
