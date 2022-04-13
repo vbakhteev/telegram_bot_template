@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  habit_bot:
+    image: habit_bot
+    container_name: habit_bot
+    build:
+      context: ./bot
+    environment:
+      - PROD=$PROD
+      - TOKEN=$TOKEN
+      - DB_URL="sqlite:///data/data.db"
+    volumes:
+      - ./resources/bot:/habit_bot/persistence
+      - ./resources/db:/habit_bot/data
+
+  minio:
+    image: minio/minio
+    volumes:
+      - ./resources/media:/data
+#    ports:
+#      - "9000:9000"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    command: server /data
