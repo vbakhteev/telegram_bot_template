@@ -1,5 +1,6 @@
 all:
 	@echo "make start	- Run all services"
+	@echo "make down	- Shut down all services"
 	@echo "make restart	- Remove all data and start from scratch"
 	@exit 0
 
