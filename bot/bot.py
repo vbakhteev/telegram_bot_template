@@ -20,6 +20,8 @@ def start(update: Update, context: CallbackContext) -> None:
             username=user.username,
         )
         msg = f'Welcome {user.full_name}'
+
+        logger.info("Registered user %s - %s - %s", user.id, user.full_name, user.username)
     else:
         msg = f'Nice to see you again, {user.full_name}'
 
