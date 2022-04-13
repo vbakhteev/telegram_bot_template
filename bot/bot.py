@@ -11,7 +11,19 @@ from src.utils import get_logger
 
 
 def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text(text='Hi')
+    user = update.effective_user
+
+    if not manager.is_user_registered(user_id=user.id):
+        manager.register_user(
+            user_id=user.id,
+            fullname=user.full_name,
+            username=user.username,
+        )
+        msg = f'Welcome {user.full_name}'
+    else:
+        msg = f'Nice to see you again, {user.full_name}'
+
+    update.message.reply_text(text=msg)
 
 
 def main(token, persistence_filename: str):
