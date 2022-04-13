@@ -9,7 +9,10 @@ services:
     environment:
       PROD: $PROD
       TOKEN: $TOKEN
+      MINIO_ROOT_USER: $MINIO_ROOT_USER
+      MINIO_ROOT_PASSWORD: $MINIO_ROOT_PASSWORD
       DB_URL: "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/postgresdb"
+      MINIO_URL: "minio:9000"
     volumes:
       - ./resources/bot:/bot/bot_data
     depends_on:
@@ -65,9 +68,10 @@ services:
     container_name: minio_container
     volumes:
       - ./resources/media:/data
-#    ports:
+    ports:
+      - "9001:9001"
 #      - "9000:9000"
     environment:
-      MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: minio123
-    command: server /data
+      MINIO_ROOT_USER: $MINIO_ROOT_USER
+      MINIO_ROOT_PASSWORD: $MINIO_ROOT_PASSWORD
+    command: server --console-address ":9001" /data
