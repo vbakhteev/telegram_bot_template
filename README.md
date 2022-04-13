@@ -11,6 +11,8 @@ It consist of 4 services:
 Create `.env` file and add a TOKEN from https://t.me/BotFather
 ```
 TOKEN="Your secret token"
+POSTGRES_USER="postgresuser"
+POSTGRES_PASSWORD="postgrespass"
 PROD=false
 ```
 

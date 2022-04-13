@@ -9,7 +9,7 @@ services:
     environment:
       PROD: $PROD
       TOKEN: $TOKEN
-      DB_URL: "postgresql://postgresuser:postgrespass@postgres:5432/postgresdb"
+      DB_URL: "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/postgresdb"
     volumes:
       - ./resources/bot:/bot/bot_data
     depends_on:
@@ -24,7 +24,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      DB_URL: "postgresql://postgresuser:postgrespass@postgres:5432/postgresdb"
+      DB_URL: "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/postgresdb"
     volumes:
       - ./bot/alembic:/bot/alembic
     restart: "no"
@@ -35,15 +35,15 @@ services:
     container_name: postgres_container
     environment:
       POSTGRES_DB: "postgresdb"
-      POSTGRES_USER: "postgresuser"
-      POSTGRES_PASSWORD: "postgrespass"
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
       - ./resources/db:/var/lib/postgresql/data
 #    ports:
 #      - "5432:5432"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgresuser -d postgresdb" ]
+      test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER -d postgresdb" ]
       interval: 10s
       timeout: 5s
       retries: 5
