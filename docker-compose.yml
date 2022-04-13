@@ -3,7 +3,7 @@ version: "3.8"
 services:
   tg_bot:
     image: tg_bot
-    container_name: habit_bot_container
+    container_name: bot_container
     build:
       context: ./bot
     environment:
@@ -11,7 +11,7 @@ services:
       TOKEN: $TOKEN
       DB_URL: "postgresql://postgresuser:postgrespass@postgres:5432/postgresdb"
     volumes:
-      - ./resources/bot:/habit_bot/bot_data
+      - ./resources/bot:/bot/bot_data
     depends_on:
       postgres:
         condition: service_healthy
