@@ -1,4 +1,4 @@
-# telegram_bot_template
+# Telegram bot project template
 
 This repo contains boilerplate code and infrastructure provisioning for development of telegram bot.
 
