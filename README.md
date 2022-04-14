@@ -3,16 +3,16 @@
 This repo contains boilerplate code and infrastructure provisioning for development of telegram bot.
 
 ## Services
-- Bot: Entrypoint and business logic of application
-- Postgres: Database
-- Minio: Storage for different files (images, videos, pdf, etc.)
-- PgAdmin: Administration of Postgres
-- Grafana: Visualization of application metrics
+- **Bot**: Entrypoint and business logic of application
+- **Postgres**: Database
+- **Minio**: Storage for different files (images, videos, pdf, etc.)
+- **PgAdmin**: Administration of Postgres
+- **Grafana**: Visualization of application metrics
 
 ## Automation
-- Infrastructure: All services reside inside docker containers and managed by docker-compose.
-- Database migrations: New migrations are created and applied by SqlAlchemy and alembic.
-- Grafana: Datasource and dashboard are provisioned with YAML files.
+- **Infrastructure**: All services reside inside docker containers and managed by docker-compose.
+- **Database migrations**: New migrations are created and applied by SqlAlchemy and alembic.
+- **Grafana**: Datasource and dashboard are provisioned with YAML files.
 
 # Getting started
 Create `.env` file and add a bot TOKEN from https://t.me/BotFather
