@@ -23,6 +23,8 @@ services:
 
   migrations:
     image: tg_bot
+    build:
+      context: ./bot
     depends_on:
       postgres:
         condition: service_healthy
