@@ -13,8 +13,8 @@ Create `.env` file and add a TOKEN from https://t.me/BotFather
 TOKEN="Your secret token"
 POSTGRES_USER="postgresuser"
 POSTGRES_PASSWORD="postgrespass"
-MINIO_ROOT_USER: minio
-MINIO_ROOT_PASSWORD: minio123
+MINIO_ROOT_USER="minio"
+MINIO_ROOT_PASSWORD="minio123"
 PROD=false
 ```
 

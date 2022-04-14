@@ -1,6 +1,8 @@
+import io
 import logging
 from typing import Optional
 
+from minio import Minio
 from telegram.ext import Filters
 
 
@@ -34,3 +36,21 @@ def get_logger(is_prod: bool, file_path: Optional[str] = None, name='bot'):
         logger.addHandler(logging.FileHandler(file_path or 'bot.log'))
 
     return logger
+
+
+def put_file_to_storage(client: Minio, file, bucket_name: str, extension: str) -> None:
+    f = io.BytesIO(file.download_as_bytearray())
+
+    client.put_object(
+        bucket_name=bucket_name,
+        object_name=file['file_unique_id'] + '.' + extension,
+        data=f, length=file['file_size'],
+    )
+
+
+def get_file_from_storage(client: Minio, file_name: str, bucket_name: str):
+    response = client.get_object(
+        bucket_name=bucket_name,
+        object_name=file_name,
+    )
+    return response

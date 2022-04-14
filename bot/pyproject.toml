@@ -11,6 +11,7 @@ alembic = "^1.7.7"
 SQLAlchemy = "1.4.28"
 python-telegram-bot = "13.9"
 psycopg2-binary = "^2.9.3"
+minio = "7.1.6"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
