@@ -35,7 +35,7 @@ services:
     entrypoint: [ "./make_migrations.sh" ]
 
   postgres:
-    image: postgres:latest
+    image: library/postgres:14.2-alpine
     container_name: postgres_container
     environment:
       POSTGRES_DB: "postgresdb"
@@ -64,6 +64,24 @@ services:
     ports:
       - "5050:80"
 
+  grafana:
+    build:
+      context: ./grafana
+    container_name: grafana_container
+    ports:
+      - 3000:3000
+    environment:
+      POSTGRES_URL: "postgres:5432"
+      POSTGRES_DB: "postgresdb"
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+
   minio:
     image: minio/minio
     container_name: minio_container
@@ -76,3 +94,8 @@ services:
       MINIO_ROOT_USER: $MINIO_ROOT_USER
       MINIO_ROOT_PASSWORD: $MINIO_ROOT_PASSWORD
     command: server --console-address ":9001" /data
+
+
+volumes:
+  grafana-data:
+    external: true
