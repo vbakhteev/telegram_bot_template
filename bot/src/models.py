@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, String, DateTime, BigInteger
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql import func
 
@@ -17,7 +17,7 @@ Base = declarative_base(cls=Base)
 class User(Base):
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True, index=True)  # from Telegram
+    id = Column(BigInteger, primary_key=True, index=True)  # from Telegram
 
     fullname = Column(String)
     username = Column(String)
