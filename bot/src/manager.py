@@ -40,6 +40,14 @@ class Manager:
             )
             return admin is not None
 
+    def get_admin_groups_names(self, admin_id: int) -> List[str]:
+        with self.SessionMaker() as session:
+            administrations: List[Administration] = session.query(Administration). \
+                filter(Administration.admin_id == admin_id). \
+                all()
+
+            return [adm.group.name for adm in administrations]
+
     def create_group(
             self,
             admin_id: int,
@@ -48,7 +56,7 @@ class Manager:
             rest_day_price_to_bank: int,
             start_date: date,
             cities: List[Tuple[str, str]],
-    ) -> Tuple[str, int]:
+    ) -> Tuple[int, str, int]:
         with self.SessionMaker() as session:
             group_name = generate_new_name(cities, session)
             invite = generate_new_invite(session)
@@ -71,7 +79,7 @@ class Manager:
             session.add(administration)
             session.commit()
 
-            return group_name, invite
+            return group.id, group_name, invite
 
     def set_channel_id_by_name(
             self,
@@ -87,11 +95,23 @@ class Manager:
             group.channel_id = channel_id
             session.commit()
 
+            return True
+
+    def is_channel_set(self, group_id: int) -> bool:
+        with self.SessionMaker() as session:
+            group = self._get_group(group_id=group_id, session=session)
+            return group.channel_id is not None
+
+    #########
+
     def _get_user(self, user_id: int, session) -> Optional[User]:
         return session.query(User).get(user_id)
 
     def _get_admin(self, admin_id: int, session) -> Optional[Admin]:
         return session.query(Admin).get(admin_id)
+
+    def _get_group(self, group_id: int, session) -> Optional[Group]:
+        return session.query(Group).get(group_id)
 
 
 def generate_new_invite(session) -> int:

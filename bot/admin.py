@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from telegram import Update, Bot
 from telegram.ext import (
     Updater, CallbackContext, CommandHandler, PicklePersistence, ConversationHandler, MessageHandler, Filters,
-    CallbackQueryHandler, ChatMemberHandler, ChatJoinRequestHandler
+    CallbackQueryHandler, ChatMemberHandler
 )
 from telegram.utils import helpers
 
@@ -53,7 +53,7 @@ def start(update: Update, context: CallbackContext) -> ConvState:
 def main_menu(update: Update, context: CallbackContext) -> ConvState:
     user = update.effective_user
 
-    group_names = ['хаб1', 'хаб2']
+    group_names = manager.get_admin_groups_names(admin_id=user.id)
     keyboard = markup_keyboard(
         [[BUTTONS.create_group]] + [[group_name] for group_name in group_names]
     )
@@ -157,7 +157,7 @@ def create_channel(update: Update, context: CallbackContext) -> ConvState:
     day_delta = int(query.data.replace('day_delta_', ''))
     start_date = datetime.now().date() + timedelta(days=day_delta)
 
-    group_name, invite = manager.create_group(
+    group_id, group_name, invite = manager.create_group(
         admin_id=user.id,
         group_type=context.user_data.pop('group_type'),
         deposit=context.user_data.pop('deposit'),
@@ -165,14 +165,23 @@ def create_channel(update: Update, context: CallbackContext) -> ConvState:
         start_date=start_date,
         cities=cities,
     )
+    context.user_data['group_id'] = group_id
     context.user_data['invite'] = invite
+    context.user_data['group_name'] = group_name
 
-    channel_name = CHANNEL_NAME_PREFIX + group_name
+    return ask_to_create_channel(update, context)
+
+
+def ask_to_create_channel(update: Update, context: CallbackContext) -> ConvState:
+    user = update.effective_user
+
+    channel_name = CHANNEL_NAME_PREFIX + context.user_data['group_name']
     user.send_message(
         text=f'''Создай приватный канал с названием
+
 <b>{channel_name}</b>
 
-Нужно добавить этого бота в администраторы''',
+Нужно добавить этого бота @{context.bot.username} в администраторы с дефолтными настройками''',
         reply_markup=markup_keyboard([['Готово']], one_time_keyboard=True),
         parse_mode='HTML',
     )
@@ -184,26 +193,31 @@ def join_channel(update: Update, context: CallbackContext):
     channel = update.my_chat_member.chat
     channel_name = channel.title
 
-    logger.info(channel_name)
-
     if not channel_name.startswith(CHANNEL_NAME_PREFIX):
+        logger.warn(
+            f"Admin bot was added to channel `{channel_name}`, but name is not started from `{CHANNEL_NAME_PREFIX}`"
+        )
         return
 
     group_name = channel_name.replace(CHANNEL_NAME_PREFIX, '')
-
     channel_is_set = manager.set_channel_id_by_name(
         channel_id=channel.id,
         group_name=group_name,
     )
 
-    logger.info(update.to_json())
-
     if not channel_is_set:
+        logger.warn(f"Admin bot was added to channel `{group_name}`, but there is no Hab with such name")
         return
+
+    update.effective_user.send_message("Успех! Жми Готово!")
 
 
 def finish_creation(update: Update, context: CallbackContext) -> ConvState:
     user = update.effective_user
+    group_id = context.user_data['group_id']
+
+    if not manager.is_channel_set(group_id=group_id):
+        return ask_to_create_channel(update, context)
 
     invite = context.user_data.pop('invite')
     url = helpers.create_deep_linked_url(
@@ -212,8 +226,9 @@ def finish_creation(update: Update, context: CallbackContext) -> ConvState:
     )
     user.send_message(
         text=f'''Хаб успешно создан!
+Осталось создать чат для канала, добавить туда участников.
 
-Теперь добавь участников в созданный чат и отправь им ссылку, чтобы они зарегистрировались в боте:
+Еще отправь им ссылку, чтобы зарегистрировались в боте:
 {url}''',
     )
 
@@ -260,7 +275,6 @@ def add_handlers(dispatcher):
         MessageHandler(get_match_regex(BUTTONS.create_group), choose_group_type),
 
         ChatMemberHandler(join_channel),
-        ChatJoinRequestHandler(join_channel),
         CallbackQueryHandler(remove_group_creation, pattern="^cancel$"),
         MessageHandler(Filters.all, main_menu),
     ]
