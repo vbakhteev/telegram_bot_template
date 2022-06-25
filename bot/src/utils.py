@@ -1,8 +1,7 @@
-import io
 import logging
-from typing import Optional
+from typing import Optional, List
 
-from minio import Minio
+from telegram import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Filters
 
 
@@ -38,19 +37,28 @@ def get_logger(is_prod: bool, file_path: Optional[str] = None, name='bot'):
     return logger
 
 
-def put_file_to_storage(client: Minio, file, bucket_name: str, extension: str) -> None:
-    f = io.BytesIO(file.download_as_bytearray())
-
-    client.put_object(
-        bucket_name=bucket_name,
-        object_name=file['file_unique_id'] + '.' + extension,
-        data=f, length=file['file_size'],
+def markup_keyboard(
+        buttons: List[List[str]], one_time_keyboard=False
+) -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(
+        [[KeyboardButton(y) for y in x] for x in buttons],
+        one_time_keyboard=one_time_keyboard,
     )
 
 
-def get_file_from_storage(client: Minio, file_name: str, bucket_name: str):
-    response = client.get_object(
-        bucket_name=bucket_name,
-        object_name=file_name,
-    )
-    return response
+def inline_keyboard(
+        buttons: List[List[str]], callbacks: List[List[str]]
+) -> InlineKeyboardMarkup:
+    keyboard = []
+    for buttons_row, callbacks_row in zip(buttons, callbacks):
+        keyboard.append(
+            [
+                inline_button(button, callback)
+                for button, callback in zip(buttons_row, callbacks_row)
+            ]
+        )
+    return InlineKeyboardMarkup(keyboard)
+
+
+def inline_button(text: str, callback_data: str) -> InlineKeyboardButton:
+    return InlineKeyboardButton(text=text, callback_data=callback_data)

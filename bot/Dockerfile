@@ -11,4 +11,4 @@ RUN poetry config virtualenvs.create false \
 
 COPY . .
 
-CMD python bot.py
+CMD python admin.py
