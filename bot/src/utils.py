@@ -1,5 +1,6 @@
 import logging
-from typing import Optional, List
+import random
+from typing import Optional, List, Tuple
 
 from telegram import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Filters
@@ -62,3 +63,18 @@ def inline_keyboard(
 
 def inline_button(text: str, callback_data: str) -> InlineKeyboardButton:
     return InlineKeyboardButton(text=text, callback_data=callback_data)
+
+
+def generate_invite() -> int:
+    return random.randint(0, 2 ** 32 - 1)
+
+
+def load_cities(path) -> List[Tuple[str, str]]:
+    cities = []
+    with open(path) as f:
+        for line in f:
+
+            flag, city = line.strip().split(',')
+            cities.append((flag, city))
+
+    return cities

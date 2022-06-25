@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import Column, ForeignKey, String, DateTime, Time, Date, BigInteger, Enum, Integer
+from sqlalchemy import Column, ForeignKey, String, DateTime, Time, Date, BigInteger, Enum, Integer, Boolean
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
 
@@ -10,6 +10,9 @@ from .utils import todict
 class GroupType(enum.Enum):
     reading = enum.auto()
     sleeping = enum.auto()
+
+    def get_name(self):
+        return self.name
 
 
 class Base:
@@ -31,19 +34,26 @@ class User(Base):
 
     registration_datetime = Column(DateTime, server_default=func.now())
 
+    groups = relationship("ParticipationRelation", back_populates="user")
+
 
 class Group(Base):
     __tablename__ = 'groups'
 
     id = Column(BigInteger, primary_key=True, index=True)
-    name = Column(String(32), unique=True)
+    name = Column(String(64), unique=True, index=True)
     group_type = Column(Enum(GroupType), nullable=True)
     invite = Column(BigInteger, index=True, unique=True)
+    channel_id = Column(BigInteger, nullable=True, unique=True, default=None)
 
     deposit = Column(Integer)
+    rest_day_price_to_bank = Column(Integer)
 
     start_date = Column(Date)
     creation_datetime = Column(DateTime, server_default=func.now())
+
+    admins = relationship("Administration", back_populates="group")
+    participants = relationship("ParticipationRelation", back_populates="group")
 
 
 class Report(Base):
@@ -55,6 +65,7 @@ class Report(Base):
     group = Column(ForeignKey('groups.id'), index=True)
 
     tg_msg_id = Column(Integer, index=True)
+    approved = Column(Boolean, nullable=True, default=None)
 
     day = Column(Integer)
     sent_datetime = Column(DateTime, server_default=func.now(), index=True)
@@ -70,6 +81,8 @@ class Admin(Base):
 
     registration_datetime = Column(DateTime, server_default=func.now())
 
+    groups = relationship("Administration", back_populates="admin")
+
 
 class Administration(Base):
     __tablename__ = 'administration_relation'
@@ -78,7 +91,7 @@ class Administration(Base):
     admin_id = Column(ForeignKey('admins.id'), primary_key=True, index=True)
 
     admin = relationship("Admin", back_populates="groups")
-    group = relationship("Admin", back_populates="admins")
+    group = relationship("Group", back_populates="admins")
 
 
 class ParticipationRelation(Base):
@@ -91,7 +104,7 @@ class ParticipationRelation(Base):
     attempts_bought = Column(Integer, default=0)
     notification_time = Column(Time, nullable=True)  # Local time
 
-    participant = relationship("User", back_populates="groups")
+    user = relationship("User", back_populates="groups")
     group = relationship("Group", back_populates="participants")
 
 
