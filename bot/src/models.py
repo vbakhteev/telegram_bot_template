@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import Column, ForeignKey, String, DateTime, Time, Date, BigInteger, Enum, Integer, Boolean
+from sqlalchemy import Column, ForeignKey, String, DateTime, Time, Date, BigInteger, Enum, Integer, Boolean, Text
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
 
@@ -101,6 +101,7 @@ class ParticipationRelation(Base):
     group_id = Column(ForeignKey('groups.id'), primary_key=True, index=True)
     entered_datetime = Column(DateTime, server_default=func.now())
 
+    participation_details = Column(Text, nullable=True)
     attempts_bought = Column(Integer, default=0)
     notification_time = Column(Time, nullable=True)  # Local time
 

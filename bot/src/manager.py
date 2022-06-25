@@ -48,6 +48,16 @@ class Manager:
 
             return [adm.group.name for adm in administrations]
 
+    def is_admin_group(self, admin_id: int, group_name) -> Tuple[bool, Optional[int]]:
+        with self.SessionMaker() as session:
+            group: Optional[Group] = session.query(Group).filter(Group.name == group_name).first()
+            if group is None:
+                return False, None
+
+            admins_of_group = [administration.admin_id for administration in group.admins]
+            is_admin = admin_id in admins_of_group
+            return is_admin, group.id
+
     def create_group(
             self,
             admin_id: int,

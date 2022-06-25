@@ -177,11 +177,8 @@ def ask_to_create_channel(update: Update, context: CallbackContext) -> ConvState
 
     channel_name = CHANNEL_NAME_PREFIX + context.user_data['group_name']
     user.send_message(
-        text=f'''Создай приватный канал с названием
-
-<b>{channel_name}</b>
-
-Нужно добавить этого бота @{context.bot.username} в администраторы с дефолтными настройками''',
+        text=f'''1. Создай приватный канал с названием <b>{channel_name}</b>
+2. Добавь бота @{context.bot.username} в администраторы с дефолтными настройками''',
         reply_markup=markup_keyboard([['Готово']], one_time_keyboard=True),
         parse_mode='HTML',
     )
@@ -235,6 +232,42 @@ def finish_creation(update: Update, context: CallbackContext) -> ConvState:
     return main_menu(update, context)
 
 
+##################
+# Group settings #
+##################
+
+
+def group_menu(update: Update, context: CallbackContext):
+    user = update.effective_user
+    text = update.message.text
+
+    is_group, group_id = manager.is_admin_group(
+        admin_id=user.id,
+        group_name=text,
+    )
+
+    if not is_group:
+        return main_menu(update, context)
+
+    buttons = [
+        ('Участник купил выходные', 'a'),
+        ('Участник заплатил за пропуск', 'b'),
+        ('Участник досрочно вышел', 'c'),
+        ('Нарисуй прогресс', f'progress_{group_id}'),
+        ('Отмена', 'cancel'),
+    ]
+    keyboard = inline_keyboard(
+        buttons=[[text] for text, label in buttons],
+        callbacks=[[label] for text, label in buttons],
+    )
+
+    user.send_message(
+        text='Выбери действие',
+        reply_markup=keyboard,
+    )
+
+
+
 ############
 # Handlers #
 ############
@@ -273,6 +306,7 @@ def add_handlers(dispatcher):
         CommandHandler("start", start),
 
         MessageHandler(get_match_regex(BUTTONS.create_group), choose_group_type),
+        MessageHandler(Filters.text, group_menu),
 
         ChatMemberHandler(join_channel),
         CallbackQueryHandler(remove_group_creation, pattern="^cancel$"),
