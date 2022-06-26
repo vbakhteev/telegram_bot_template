@@ -4,7 +4,7 @@ from typing import Optional, List, Tuple
 
 from sqlalchemy.orm import sessionmaker
 
-from .models import User, Admin, Group, GroupType, Administration
+from .models import User, Admin, Group, GroupType, Administration, Participation
 from .utils import generate_invite
 
 
@@ -47,6 +47,14 @@ class Manager:
                 all()
 
             return [adm.group.name for adm in administrations]
+
+    def get_user_groups(self, user_id: int) -> List[Group]:
+        with self.SessionMaker() as session:
+            participations: List[Participation] = session.query(Participation). \
+                filter(Participation.admin_id == user_id). \
+                all()
+
+            return [p.group for p in participations]
 
     def is_admin_group(self, admin_id: int, group_name) -> Tuple[bool, Optional[int]]:
         with self.SessionMaker() as session:

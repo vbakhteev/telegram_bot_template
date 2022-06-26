@@ -94,7 +94,7 @@ class Administration(Base):
     group = relationship("Group", back_populates="admins")
 
 
-class ParticipationRelation(Base):
+class Participation(Base):
     __tablename__ = 'participation_relation'
 
     user_id = Column(ForeignKey('users.id'), primary_key=True, index=True)
